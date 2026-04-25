@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daymori Official</title>
+<style>
+:root {
+  --bg: #eef5ff;
+  --bg-soft: #dfeafd;
+  --surface: rgba(255, 255, 255, 0.82);
+  --surface-strong: rgba(255, 255, 255, 0.92);
+  --ink: #233654;
+  --muted: #4f6b8c;
+  --line: rgba(106, 140, 186, 0.16);
+  --accent: #6d95cb;
+  --shadow: 0 24px 60px rgba(94, 128, 173, 0.16);
+  --radius-xl: 28px;
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+  --container: min(1180px, calc(100vw - 48px));
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.96), transparent 28%),
+    radial-gradient(circle at 82% 12%, rgba(198, 224, 255, 0.72), transparent 22%),
+    linear-gradient(160deg, var(--bg), var(--bg-soft));
+  letter-spacing: 0.01em;
+  overflow-x: hidden;
+}
+
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  border-radius: 999px;
+  filter: blur(16px);
+  pointer-events: none;
+  opacity: 0.6;
+  z-index: 0;
+}
+
+body::before {
+  top: 8vh;
+  left: -6vw;
+  width: 240px;
+  height: 86px;
+  background: radial-gradient(circle at 35% 50%, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.18) 70%, transparent 73%);
+}
+
+body::after {
+  top: 24vh;
+  right: -4vw;
+  width: 280px;
+  height: 96px;
+  background: radial-gradient(circle at 42% 50%, rgba(255, 255, 255, 0.84), rgba(222, 236, 255, 0.16) 72%, transparent 75%);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.container {
+  width: var(--container);
+  margin: 0 auto;
+}
+
+.navbar {
+  position: fixed;
+  top: 14px;
+  left: 0;
+  right: 0;
+  z-index: 40;
+}
+
+.nav-shell {
+  width: min(1020px, calc(100vw - 28px));
+  margin: 0 auto;
+  height: 62px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 22px;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(18px) saturate(115%);
+  -webkit-backdrop-filter: blur(18px) saturate(115%);
+  box-shadow: 0 16px 36px rgba(94, 128, 173, 0.15);
+}
+
+.brand {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.nav-links a {
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: #365a86;
+  transition: color 0.32s var(--ease-out), opacity 0.32s var(--ease-out);
+}
+
+.nav-links a:hover {
+  color: #233654;
+  opacity: 1;
+}
+
+.section {
+  position: relative;
+  z-index: 2;
+}
+
+.hero {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 162px 0 90px;
+}
+
+.hero-panel {
+  width: min(980px, calc(100vw - 48px));
+  border-radius: calc(var(--radius-xl) + 8px);
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.92), rgba(236, 245, 255, 0.84));
+  border: 1px solid rgba(106, 140, 186, 0.18);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(16px) saturate(120%);
+  -webkit-backdrop-filter: blur(16px) saturate(120%);
+  padding: clamp(56px, 7vw, 98px) clamp(22px, 5vw, 88px) clamp(40px, 6vw, 80px);
+  opacity: 0;
+  transform: translateY(28px);
+  animation: reveal-up 1s var(--ease-out) 0.18s forwards;
+}
+
+.hero h1 {
+  margin: 10px 0 0;
+  line-height: 1.04;
+  font-size: clamp(2.5rem, 6.5vw, 6rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.hero-sub {
+  margin: 26px auto 0;
+  max-width: 650px;
+  color: var(--muted);
+  font-size: clamp(1rem, 2vw, 1.3rem);
+  line-height: 1.68;
+  font-weight: 400;
+}
+
+.cta-row {
+  margin-top: 34px;
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  min-width: 160px;
+  border-radius: var(--radius-pill);
+  padding: 13px 25px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: transform 0.36s var(--ease-out), background-color 0.36s var(--ease-out), border-color 0.36s var(--ease-out), color 0.36s var(--ease-out), box-shadow 0.36s var(--ease-out);
+}
+
+.btn-primary {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(232, 242, 255, 0.92));
+  color: #2f5684;
+  border: 1px solid rgba(109, 149, 203, 0.16);
+  box-shadow: 0 14px 28px rgba(94, 128, 173, 0.2);
+}
+
+.btn-outline {
+  background: rgba(255, 255, 255, 0.74);
+  color: #233654;
+  border: 1px solid rgba(109, 149, 203, 0.16);
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.btn-primary:hover {
+  background: #ffffff;
+}
+
+.btn-outline:hover {
+  border-color: rgba(109, 149, 203, 0.28);
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.value {
+  padding: 110px 0;
+}
+
+.value-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.value-card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 30px 26px;
+  background: var(--surface);
+  backdrop-filter: blur(10px) saturate(110%);
+  -webkit-backdrop-filter: blur(10px) saturate(110%);
+  opacity: 0;
+  transform: translateY(28px);
+}
+
+.value-card:nth-child(1) {
+  animation: reveal-up 0.9s var(--ease-out) 0.1s forwards;
+}
+
+.value-card:nth-child(2) {
+  animation: reveal-up 0.9s var(--ease-out) 0.2s forwards;
+}
+
+.value-card:nth-child(3) {
+  animation: reveal-up 0.9s var(--ease-out) 0.3s forwards;
+}
+
+.value-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid rgba(109, 149, 203, 0.16);
+  display: grid;
+  place-items: center;
+  font-size: 1.1rem;
+  margin-bottom: 18px;
+  background: rgba(255, 255, 255, 0.72);
+  color: #365a86;
+}
+
+.value-card h3 {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 600;
+}
+
+.value-card p {
+  margin: 14px 0 0;
+  color: var(--muted);
+  line-height: 1.82;
+  font-size: 0.98rem;
+}
+
+.feature-section {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: 86px 0;
+}
+
+.feature-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(22px, 4vw, 56px);
+  align-items: center;
+}
+
+.feature-wrap.reverse .feature-copy {
+  order: 2;
+}
+
+.feature-wrap.reverse .feature-visual {
+  order: 1;
+}
+
+.feature-copy h2 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3.35rem);
+  line-height: 1.15;
+  font-weight: 700;
+}
+
+.feature-copy p {
+  margin: 20px 0 0;
+  font-size: 1.02rem;
+  line-height: 1.95;
+  color: var(--muted);
+  max-width: 520px;
+}
+
+.feature-visual {
+  height: clamp(260px, 44vw, 500px);
+  border-radius: calc(var(--radius-xl) + 6px);
+  border: 1px solid var(--line);
+  background:
+    radial-gradient(circle at 24% 18%, rgba(255, 255, 255, 0.84), transparent 48%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.94), rgba(228, 240, 255, 0.74));
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px) saturate(110%);
+  -webkit-backdrop-filter: blur(10px) saturate(110%);
+}
+
+.feature-visual::before,
+.feature-visual::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(109, 149, 203, 0.2);
+}
+
+.feature-visual::before {
+  width: 210px;
+  height: 210px;
+  top: -68px;
+  right: -32px;
+  background: radial-gradient(circle at 40% 34%, rgba(255, 255, 255, 0.95), rgba(217, 235, 255, 0.4));
+}
+
+.feature-visual::after {
+  width: 150px;
+  height: 150px;
+  left: -36px;
+  bottom: -44px;
+  background: radial-gradient(circle at 45% 45%, rgba(255, 255, 255, 0.9), rgba(212, 232, 255, 0.36));
+}
+
+.feature-chip {
+  position: absolute;
+  left: 26px;
+  bottom: 24px;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(109, 149, 203, 0.22);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 9px 16px;
+  color: #365a86;
+  font-size: 0.84rem;
+  letter-spacing: 0.03em;
+}
+
+.philosophy {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 100px 0;
+}
+
+.philosophy-panel {
+  width: min(860px, calc(100vw - 48px));
+}
+
+.philosophy h2 {
+  margin: 0;
+  font-size: clamp(2rem, 4.1vw, 3.6rem);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+.philosophy p {
+  margin: 20px auto 0;
+  max-width: 760px;
+  color: var(--muted);
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  line-height: 1.95;
+}
+
+.final-cta {
+  min-height: 86vh;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 90px 0;
+}
+
+.final-cta [data-reveal] {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.final-cta h2 {
+  margin: 0;
+  font-size: clamp(2.1rem, 4.8vw, 4rem);
+  line-height: 1.15;
+}
+
+.final-cta p {
+  margin: 16px 0 0;
+  color: var(--muted);
+  font-size: clamp(1rem, 2vw, 1.2rem);
+}
+
+.final-cta .btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 36px;
+  min-width: 210px;
+  padding: 15px 30px;
+}
+
+.footer {
+  border-top: 1px solid rgba(106, 140, 186, 0.18);
+  background: rgba(255, 255, 255, 0.68);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 54px 0 30px;
+}
+
+.footer-top {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 26px;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 30px;
+}
+
+.footer-col h4 {
+  margin: 0 0 14px;
+  font-size: 0.84rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #4d6c90;
+  font-weight: 600;
+}
+
+.footer-col a {
+  display: block;
+  margin-bottom: 10px;
+  color: #365a86;
+  font-size: 0.95rem;
+  transition: color 0.28s var(--ease-out);
+}
+
+.footer-col a:hover {
+  color: #233654;
+}
+
+.copyright {
+  margin-top: 34px;
+  text-align: center;
+  color: #5f7d9f;
+  font-size: 0.76rem;
+  line-height: 1.8;
+}
+
+.parallax {
+  transform: translate3d(0, var(--parallax-y, 0px), 0);
+  transition: transform 0.9s var(--ease-out);
+}
+
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.88s var(--ease-out), transform 0.88s var(--ease-out);
+}
+
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 980px) {
+  .feature-wrap,
+  .feature-wrap.reverse {
+    grid-template-columns: 1fr;
+  }
+
+  .feature-wrap.reverse .feature-copy,
+  .feature-wrap.reverse .feature-visual {
+    order: initial;
+  }
+
+  .feature-copy p {
+    max-width: 100%;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  :root {
+    --container: min(1180px, calc(100vw - 32px));
+  }
+
+  .navbar {
+    top: 10px;
+  }
+
+  .nav-shell {
+    height: 56px;
+    padding: 0 14px;
+    gap: 12px;
+  }
+
+  .nav-links {
+    gap: 14px;
+  }
+
+  .nav-links a {
+    font-size: 0.82rem;
+  }
+
+  .hero {
+    padding-top: 122px;
+  }
+
+  .hero-sub {
+    line-height: 1.8;
+  }
+
+  .value {
+    padding: 84px 0;
+  }
+
+  .value-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .feature-section {
+    min-height: auto;
+    padding: 74px 0;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+</style>
+</head>
+<body>
+<header class="navbar">
+  <nav class="nav-shell">
+    <div class="brand">Daymori</div>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#design">Design</a>
+      <a href="#download">Download</a>
+      <a href="#support">Support</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <section class="section hero" id="top">
+    <div class="hero-panel parallax" data-speed="0.14">
+      <h1>Daymori</h1>
+      <p class="hero-sub">
+        为专注而生的数字自律伴侣<br>
+        告别冗余，回归生活本身的秩序
+      </p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://github.com/xcq20100224/Daymori/releases/latest/download/Daymori.apk" target="_blank" rel="noopener noreferrer">Direct Download APK</a>
+        <a class="btn btn-outline" href="#features">Learn More</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section value" id="features">
+    <div class="container value-grid">
+      <article class="value-card" data-reveal>
+        <div class="value-icon">01</div>
+        <h3>极致专注</h3>
+        <p>无冗余功能，无推送打扰，只保留帮你进入深度专注的核心能力</p>
+      </article>
+      <article class="value-card" data-reveal>
+        <div class="value-icon">02</div>
+        <h3>极简设计</h3>
+        <p>遵循Apple式美学，每一处像素都经过打磨，克制且富有力量</p>
+      </article>
+      <article class="value-card" data-reveal>
+        <div class="value-icon">03</div>
+        <h3>全链路自律</h3>
+        <p>从专注计时到睡眠监测，从护眼模式到习惯养成，一站式守护你的自律生活</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section feature-section">
+    <div class="container feature-wrap">
+      <div class="feature-copy" data-reveal>
+        <h2>专注，一键开启</h2>
+        <p>
+          告别复杂设置，一键启动专注计时<br>
+          自定义专注时长，白噪音辅助沉浸<br>
+          帮你快速进入心流状态<br>
+          记录每一段不被打扰的专注时光
+        </p>
+      </div>
+      <div class="feature-visual parallax" data-speed="0.08" data-reveal>
+        <span class="feature-chip">Core Feature 01</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section feature-section">
+    <div class="container feature-wrap reverse">
+      <div class="feature-copy" data-reveal>
+        <h2>安睡，整夜守护</h2>
+        <p>
+          精准监测睡眠状态，深度分析睡眠周期<br>
+          晨起生成轻量化睡眠报告<br>
+          温和自然唤醒，告别生硬闹钟<br>
+          帮你养成规律作息，找回高质量睡眠
+        </p>
+      </div>
+      <div class="feature-visual parallax" data-speed="0.1" data-reveal>
+        <span class="feature-chip">Core Feature 02</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section feature-section">
+    <div class="container feature-wrap">
+      <div class="feature-copy" data-reveal>
+        <h2>视觉，温柔以待</h2>
+        <p>
+          全局深色模式自适应<br>
+          左滑一键开启护眼模式<br>
+          屏幕色温智能跟随环境调节<br>
+          减少蓝光伤害，长时间使用也能守护双眼舒适
+        </p>
+      </div>
+      <div class="feature-visual parallax" data-speed="0.08" data-reveal>
+        <span class="feature-chip">Core Feature 03</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section feature-section">
+    <div class="container feature-wrap reverse">
+      <div class="feature-copy" data-reveal>
+        <h2>自律，日积月累</h2>
+        <p>
+          极简的习惯打卡体系，无复杂任务设置<br>
+          只记录你的每一次坚持<br>
+          自动生成可视化成长轨迹<br>
+          让自律，成为自然而然的日常习惯
+        </p>
+      </div>
+      <div class="feature-visual parallax" data-speed="0.1" data-reveal>
+        <span class="feature-chip">Core Feature 04</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section philosophy" id="design">
+    <div class="philosophy-panel" data-reveal>
+      <h2>设计，为体验而生</h2>
+      <p>
+        我们相信，好的产品，是隐形的。<br>
+        不抢夺你的注意力，只在你需要的时候，提供恰到好处的帮助。<br><br>
+        Daymori的每一处设计，都遵循「少即是多」的原则。<br>
+        剔除所有不必要的元素，只保留最核心的功能，与最舒适的体验。<br><br>
+        就像你手中的Apple设备，极致简约，却又无比强大。
+      </p>
+    </div>
+  </section>
+
+  <section class="section final-cta" id="download">
+    <div data-reveal>
+      <h2>开启你的极简自律之旅</h2>
+      <p>点击即可直接下载最新版本，链接固定，后续更新无需改网址</p>
+      <div class="cta-row" style="margin-top:16px;justify-content:center;">
+        <a class="btn btn-primary" href="https://github.com/xcq20100224/Daymori/releases/latest/download/Daymori.apk" target="_blank" rel="noopener noreferrer">安卓直接下载（APK）</a>
+        <a class="btn btn-outline" href="https://github.com/xcq20100224/Daymori/archive/refs/heads/main.zip" target="_blank" rel="noopener noreferrer">备用下载（源码ZIP）</a>
+      </div>
+      <p style="margin-top:14px;font-size:.92rem;line-height:1.8;">永久下载链接：<a href="https://github.com/xcq20100224/Daymori/releases/latest/download/Daymori.apk" target="_blank" rel="noopener noreferrer">https://github.com/xcq20100224/Daymori/releases/latest/download/Daymori.apk</a></p>
+    </div>
+  </section>
+</main>
+
+<footer class="footer" id="support">
+  <div class="container">
+    <div class="footer-top">Daymori</div>
+    <div class="footer-grid">
+      <div class="footer-col">
+        <h4>产品</h4>
+        <a href="#features">Features</a>
+        <a href="#design">Design</a>
+        <a href="#download">Download</a>
+        <a href="#top">What's New</a>
+      </div>
+      <div class="footer-col">
+        <h4>支持</h4>
+        <a href="#support">Help Center</a>
+        <a href="https://github.com/xcq20100224/Daymori" target="_blank" rel="noopener noreferrer">GitHub Repo</a>
+        <a href="#support">Privacy Policy</a>
+        <a href="#support">Terms of Service</a>
+      </div>
+    </div>
+    <div class="copyright">
+      Copyright © 2026 Daymori. All rights reserved.<br>
+      Designed with minimalism in mind.
+    </div>
+  </div>
+</footer>
+
+<script>
+const revealTargets = document.querySelectorAll('[data-reveal]');
+const parallaxTargets = document.querySelectorAll('.parallax');
+
+const revealObserver = new IntersectionObserver((entries, observer) => {
+  entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('is-visible');
+      observer.unobserve(entry.target);
+    }
+  });
+}, {
+  threshold: 0.25,
+  rootMargin: '0px 0px -8% 0px'
+});
+
+revealTargets.forEach((el) => revealObserver.observe(el));
+
+function updateParallax() {
+  const viewportH = window.innerHeight;
+  parallaxTargets.forEach((el) => {
+    const rect = el.getBoundingClientRect();
+    const speed = Number(el.dataset.speed || 0.1);
+    const centerOffset = rect.top + rect.height * 0.5 - viewportH * 0.5;
+    const shift = centerOffset * speed * -0.18;
+    el.style.setProperty('--parallax-y', `${shift}px`);
+  });
+}
+
+updateParallax();
+window.addEventListener('scroll', updateParallax, { passive: true });
+window.addEventListener('resize', updateParallax);
+</script>
+</body>
+</html>
