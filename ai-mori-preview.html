@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mori 自律伙伴预览</title>
+<style>
+:root {
+  --bg: #06101d;
+  --bg-soft: #0f1f33;
+  --card: #10243a;
+  --card-2: #122b45;
+  --line: rgba(255, 255, 255, 0.1);
+  --text: #e9f4ff;
+  --muted: #9eb9d7;
+  --accent: #32b8ff;
+  --accent-soft: rgba(50, 184, 255, 0.2);
+  --warning: #ffd68a;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); }
+body {
+  font-family: "SF Pro Display", "PingFang SC", "Microsoft YaHei", sans-serif;
+  min-height: 100vh;
+  background-image:
+    radial-gradient(circle at 12% -8%, rgba(50, 184, 255, 0.24), transparent 35%),
+    radial-gradient(circle at 90% 10%, rgba(84, 140, 255, 0.2), transparent 30%),
+    linear-gradient(180deg, #050f1b, #071528 32%, #050d18);
+}
+.app {
+  max-width: 460px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: 1fr auto auto;
+  padding: 20px 16px calc(10px + env(safe-area-inset-bottom));
+  gap: 10px;
+}
+.content {
+  overflow: auto;
+  padding-bottom: 8px;
+}
+.status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  margin: 2px 2px 14px;
+}
+.hero {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(160deg, #1f3554, #12263f);
+  border: 1px solid var(--line);
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+}
+.hero h1 {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.5;
+  font-weight: 500;
+}
+.event-card {
+  display: grid;
+  grid-template-columns: 102px 1fr;
+  gap: 12px;
+  background: linear-gradient(180deg, rgba(20, 38, 62, 0.96), rgba(15, 30, 50, 0.96));
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 10px;
+  margin-bottom: 14px;
+}
+.event-poster {
+  border-radius: 12px;
+  background:
+    linear-gradient(145deg, rgba(50, 184, 255, 0.3), rgba(84, 140, 255, 0.24)),
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.06) 0 3px, transparent 3px 8px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  min-height: 96px;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+}
+.event-title {
+  margin: 0 0 8px;
+  font-size: 17px;
+  line-height: 1.4;
+}
+.event-meta {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.event-tag {
+  color: var(--warning);
+  font-weight: 600;
+  margin-right: 8px;
+}
+.section-title {
+  margin: 8px 2px;
+  color: #cfe2ff;
+  font-size: 14px;
+}
+.topic-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.topic-btn {
+  width: 100%;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+  border-radius: 16px;
+  padding: 12px 14px;
+  text-align: left;
+  font-size: 16px;
+}
+.plan-card {
+  background: linear-gradient(180deg, var(--card), var(--card-2));
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 12px;
+  margin-bottom: 14px;
+}
+.plan-card h3 {
+  margin: 0 0 10px;
+  font-size: 15px;
+  color: #d6ffe5;
+}
+.plan-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.plan-actions button {
+  border: 1px solid rgba(50, 184, 255, 0.42);
+  background: var(--accent-soft);
+  color: #daf0ff;
+  padding: 8px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+}
+.chat {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: 16px;
+}
+.msg {
+  max-width: 92%;
+  border-radius: 14px;
+  padding: 11px 12px;
+  line-height: 1.7;
+  font-size: 14px;
+  white-space: pre-wrap;
+}
+.msg.user {
+  margin-left: auto;
+  background: rgba(50, 184, 255, 0.24);
+  border: 1px solid rgba(140, 211, 255, 0.35);
+}
+.msg.mori {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--line);
+}
+.msg.warn {
+  background: rgba(246, 183, 74, 0.16);
+  border: 1px solid rgba(246, 183, 74, 0.35);
+}
+.composer {
+  display: grid;
+  grid-template-columns: 40px 1fr 64px;
+  gap: 8px;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 8px;
+}
+.composer:focus-within {
+  border-color: rgba(98, 201, 255, 0.5);
+}
+.voice-btn,
+.send-btn {
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  color: var(--text);
+}
+.voice-btn { background: rgba(255, 255, 255, 0.05); }
+.send-btn { background: linear-gradient(180deg, #40c8ff, #1c8fdd); border-color: rgba(50, 184, 255, 0.55); }
+.composer input {
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  padding: 0 12px;
+  font-size: 16px;
+}
+.bottom-nav {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  text-align: center;
+  color: #87a3c5;
+  font-size: 18px;
+  padding: 6px 0 2px;
+}
+.bottom-nav b { color: #f5fbff; }
+.hint-line {
+  margin: 0 2px 12px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.home-indicator {
+  width: 130px;
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.8);
+  margin: 6px auto 0;
+}
+.typing {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.typing i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(215, 255, 231, 0.85);
+  animation: blink 1s infinite ease-in-out;
+}
+.typing i:nth-child(2) { animation-delay: .15s; }
+.typing i:nth-child(3) { animation-delay: .3s; }
+@keyframes blink {
+  0%, 80%, 100% { opacity: .3; transform: translateY(0); }
+  40% { opacity: 1; transform: translateY(-2px); }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <main class="content" id="scrollArea">
+    <div class="status-row">
+      <span id="statusTime">--:-- 🔕</span>
+      <span>Daymori Theme</span>
+    </div>
+
+    <section class="hero">
+      <div class="avatar">◔</div>
+      <h1>Sig Mori 自律季已开启：今晚先拿下 1 个 25 分钟专注</h1>
+    </section>
+    <p class="hint-line">Mori 保持短句回复，优先给你当下可执行的下一步。</p>
+
+    <section class="event-card">
+      <div class="event-poster">🏃</div>
+      <div>
+        <h2 class="event-title">7 天自律冲刺</h2>
+        <p class="event-meta"><span class="event-tag">自律赛季</span>每天完成 3 步：计划、专注、复盘</p>
+      </div>
+    </section>
+
+    <p class="section-title">聊聊新话题</p>
+    <div class="topic-list" id="topicList">
+      <button class="topic-btn" type="button">今天分心很多，怎么把注意力拉回来？</button>
+      <button class="topic-btn" type="button">帮我把大作业拆成今晚能完成的 3 步</button>
+      <button class="topic-btn" type="button">如果拖延了半天，晚上怎么补救最稳？</button>
+    </div>
+
+    <section class="plan-card">
+      <h3>今日行动建议</h3>
+      <div class="plan-actions">
+        <button type="button" data-plan="start">开局 25 分钟</button>
+        <button type="button" data-plan="split">任务拆分 3 步</button>
+        <button type="button" data-plan="review">专注后复盘模板</button>
+        <button type="button" data-plan="urge">冲动应急 5 分钟</button>
+      </div>
+    </section>
+
+    <section class="chat" id="chat"></section>
+  </main>
+
+  <section class="composer">
+    <button class="voice-btn" id="voiceBtn" type="button" aria-label="语音输入">◉</button>
+    <input id="input" type="text" placeholder="给 Mori 发消息">
+    <button class="send-btn" id="sendBtn" type="button">发送</button>
+  </section>
+
+  <footer>
+    <nav class="bottom-nav">
+      <b>Sig</b>
+      <span>开跑</span>
+      <span>我的</span>
+    </nav>
+    <div class="home-indicator"></div>
+  </footer>
+</div>
+
+<script>
+const STORE_KEY = 'daymori_sigma_mori_preview';
+const chatEl = document.getElementById('chat');
+const inputEl = document.getElementById('input');
+const sendBtn = document.getElementById('sendBtn');
+const voiceBtn = document.getElementById('voiceBtn');
+const topicList = document.getElementById('topicList');
+const planActions = document.querySelector('.plan-actions');
+const scrollArea = document.getElementById('scrollArea');
+const statusTimeEl = document.getElementById('statusTime');
+
+let canPersist = true;
+let replying = false;
+const state = loadState() || { messages: [], profile: { nickname: '你', recentGoal: '' } };
+
+const blockedPattern = /代写|考试答案|作弊|枪手|色情|裸聊|制毒|炸弹|银行卡号|身份证号/i;
+const crisisPattern = /自杀|轻生|结束生命|自残|割腕|不想活/i;
+const emergencyPattern = /我忍不住了|破防了|想放弃了|又熬夜了|又刷短视频了|停不下来|心态崩了/i;
+const runtime = readRuntimeConfig();
+
+function readRuntimeConfig() {
+  const query = new URLSearchParams(window.location.search);
+  let endpoint = (query.get('mori_api') || '').trim();
+  let apiKey = (query.get('mori_key') || '').trim();
+  let model = (query.get('mori_model') || '').trim();
+  if (!endpoint || !apiKey || !model) {
+    try {
+      endpoint = endpoint || (localStorage.getItem('daymori_mori_api') || '').trim();
+      apiKey = apiKey || (localStorage.getItem('daymori_mori_key') || '').trim();
+      model = model || (localStorage.getItem('daymori_mori_model') || '').trim();
+    } catch {
+      canPersist = false;
+    }
+  }
+  if (!model) model = 'gpt-4o-mini';
+  return {
+    endpoint,
+    apiKey,
+    model,
+    enabled: /^https?:\/\//i.test(endpoint)
+  };
+}
+
+function setComposerState(disabled) {
+  inputEl.disabled = disabled;
+  sendBtn.disabled = disabled;
+  voiceBtn.disabled = disabled;
+}
+
+function trimReply(text) {
+  const value = (text || '').trim();
+  if (!value) return '';
+  return value.length > 380 ? value.slice(0, 380) + '…' : value;
+}
+
+function buildRemoteMessages(input) {
+  const recent = state.messages.slice(-8).map((item) => ({
+    role: item.role === 'user' ? 'user' : 'assistant',
+    content: item.text
+  }));
+  return [
+    {
+      role: 'system',
+      content: '你是 Daymori 的 Mori 自律伙伴。只给积极、合规、可执行建议。每次回复不超过 6 行，优先给下一步动作。'
+    },
+    ...recent,
+    { role: 'user', content: input }
+  ];
+}
+
+async function fetchRemoteReply(input) {
+  if (!runtime.enabled) return '';
+  try {
+    const headers = { 'Content-Type': 'application/json' };
+    if (runtime.apiKey) headers.Authorization = 'Bearer ' + runtime.apiKey;
+    const response = await fetch(runtime.endpoint, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        model: runtime.model,
+        messages: buildRemoteMessages(input),
+        temperature: 0.6,
+        max_tokens: 280
+      })
+    });
+    if (!response.ok) return '';
+    const data = await response.json();
+    const text = data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+    return trimReply(text);
+  } catch {
+    return '';
+  }
+}
+
+function saveState() {
+  if (!canPersist) return;
+  try {
+    localStorage.setItem(STORE_KEY, JSON.stringify(state));
+  } catch {
+    canPersist = false;
+  }
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || !Array.isArray(parsed.messages)) return null;
+    return parsed;
+  } catch {
+    canPersist = false;
+    return null;
+  }
+}
+
+function appendMessage(role, text, type) {
+  const msg = { role, text, type: type || 'mori', at: Date.now() };
+  state.messages.push(msg);
+  saveState();
+  renderMessage(msg);
+}
+
+function renderMessage(msg) {
+  const node = document.createElement('div');
+  node.className = 'msg ' + (msg.role === 'user' ? 'user' : msg.type);
+  node.textContent = msg.text;
+  chatEl.appendChild(node);
+  requestAnimationFrame(() => {
+    scrollArea.scrollTop = scrollArea.scrollHeight;
+  });
+}
+
+function renderAll() {
+  chatEl.innerHTML = '';
+  state.messages.forEach(renderMessage);
+}
+
+function showTyping() {
+  const node = document.createElement('div');
+  node.className = 'msg mori';
+  node.id = 'typingMsg';
+  node.innerHTML = '<span class="typing"><i></i><i></i><i></i></span>';
+  chatEl.appendChild(node);
+  scrollArea.scrollTop = scrollArea.scrollHeight;
+}
+
+function hideTyping() {
+  const node = document.getElementById('typingMsg');
+  if (node) node.remove();
+}
+
+function lastUserMessage() {
+  for (let i = state.messages.length - 1; i >= 0; i -= 1) {
+    if (state.messages[i].role === 'user') return state.messages[i].text;
+  }
+  return '';
+}
+
+function buildThreeStepPlan(text) {
+  const core = text.replace(/[？?。！!]/g, '').slice(0, 22) || '当前任务';
+  return [
+    `1) 5 分钟：把“${core}”拆成 3 个可交付小块`,
+    '2) 25 分钟：只做第 1 块，中途不切任务',
+    '3) 3 分钟：复盘今天卡住点 + 明天第一步'
+  ].join('\n');
+}
+
+function moriReply(input) {
+  const text = input.trim();
+
+  if (!text) {
+    return '你可以直接说现在卡住点，我会给你一个 5 分钟内可执行的动作。';
+  }
+
+  if (blockedPattern.test(text)) {
+    return { text: '这个方向我不能协助。我们换成学习、自律、效率或情绪稳定的可执行方案。', type: 'warn' };
+  }
+
+  if (crisisPattern.test(text)) {
+    return {
+      text: '我很在意你的安全。请立刻联系你信任的人，并尽快联系当地心理援助热线或医院急诊。你不需要一个人扛。',
+      type: 'warn'
+    };
+  }
+
+  if (emergencyPattern.test(text)) {
+    return '先稳住 5 分钟：\n1) 呼吸 4 秒吸气 / 6 秒呼气，做 10 轮\n2) 离开诱因环境走 3 分钟\n3) 喝一杯水并做 10 个深蹲\n4) 打开 25 分钟计时，只做一个最小动作';
+  }
+
+  if (/拖延|分心|专注|注意力|效率|学习状态/i.test(text)) {
+    return '你现在执行这个回正流程：\n- 关掉 1 个干扰源（短视频/聊天）\n- 写下当前唯一任务\n- 开始 25 分钟计时\n结束后回复我“已完成”，我继续给你下一步。';
+  }
+
+  if (/计划|安排|拆分|作业|任务|项目|复习/i.test(text)) {
+    state.profile.recentGoal = text;
+    saveState();
+    return `好的，按 3 步做：\n${buildThreeStepPlan(text)}`;
+  }
+
+  if (/已完成|完成了|做完了|done/i.test(text)) {
+    const goal = state.profile.recentGoal || '当前任务';
+    return `干得漂亮。下一步别贪多：\n1) 用 2 分钟写下“${goal}”的复盘\n2) 休息 5 分钟\n3) 再开一个 25 分钟，进入下一小块。`;
+  }
+
+  const prev = lastUserMessage();
+  if (prev && prev !== text) {
+    return '收到。我会保持短句陪你推进：先选一个 5 分钟动作并立刻开始，完成后告诉我结果，我帮你收敛到下一步。';
+  }
+
+  return '收到。先做最小动作：现在立刻开 25 分钟计时，只做一件事。做完回我“已完成”。';
+}
+
+async function generateReply(content) {
+  const remote = await fetchRemoteReply(content);
+  if (remote) return remote;
+  return moriReply(content);
+}
+
+async function sendMessage(text) {
+  const content = text.trim();
+  if (!content) return;
+
+  if (content === '/clear') {
+    state.messages = [];
+    saveState();
+    renderAll();
+    appendMessage('mori', '聊天记录已清空。告诉我你现在最卡的任务，我来帮你起步。', 'mori');
+    return;
+  }
+
+  if (replying) {
+    appendMessage('mori', '我正在整理上一条回复，1 秒后继续发我就好。', 'mori');
+    return;
+  }
+
+  appendMessage('user', content, 'user');
+  replying = true;
+  setComposerState(true);
+  showTyping();
+  const result = await generateReply(content);
+  window.setTimeout(() => {
+    hideTyping();
+    if (typeof result === 'string') {
+      appendMessage('mori', result, 'mori');
+    } else {
+      appendMessage('mori', result.text, result.type || 'mori');
+    }
+    replying = false;
+    setComposerState(false);
+    inputEl.focus();
+  }, 220);
+}
+
+sendBtn.addEventListener('click', async () => {
+  await sendMessage(inputEl.value);
+  inputEl.value = '';
+});
+
+inputEl.addEventListener('keydown', async (event) => {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    await sendMessage(inputEl.value);
+    inputEl.value = '';
+  }
+});
+
+voiceBtn.addEventListener('click', () => {
+  appendMessage('mori', '当前预览版暂未启用语音识别。你可以直接文字输入，我会保持短句和可执行建议。', 'mori');
+});
+
+topicList.addEventListener('click', (event) => {
+  const button = event.target.closest('button');
+  if (!button) return;
+  sendMessage(button.textContent || '').catch(() => {});
+});
+
+planActions.addEventListener('click', (event) => {
+  const button = event.target.closest('button[data-plan]');
+  if (!button) return;
+  const map = {
+    start: '我现在要开始 25 分钟专注，先做什么？',
+    split: '帮我把当前任务拆成今晚可完成的 3 步',
+    review: '给我一个 3 行复盘模板',
+    urge: '我忍不住了，给我应急支持'
+  };
+  sendMessage(map[button.dataset.plan] || '帮我规划今天的自律计划').catch(() => {});
+});
+
+function updateClock() {
+  if (!statusTimeEl) return;
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2, '0');
+  const mm = String(now.getMinutes()).padStart(2, '0');
+  statusTimeEl.textContent = hh + ':' + mm + ' 🔕';
+}
+
+updateClock();
+window.setInterval(updateClock, 30000);
+
+renderAll();
+if (!state.messages.length) {
+  appendMessage('mori', '你好，我是 Mori。你告诉我现在最卡的一件事，我给你短、稳、可执行的下一步。', 'mori');
+}
+if (runtime.enabled && state.messages.length < 2) {
+  appendMessage('mori', '已连接在线对话引擎；若网络异常会自动回退到本地自律教练模式。', 'mori');
+}
+</script>
+</body>
+</html>
